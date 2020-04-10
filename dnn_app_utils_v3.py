@@ -20,6 +20,20 @@ def sigmoid(Z):
     
     return A, cache
 
+def softmax(Z):
+    """
+    Implements the softmax activation in numpy
+    
+    Arguments:
+    Z -- numpy array of any shape
+    
+    Returns:
+    A -- output of softmax(z), same shape as Z
+    cache -- returns Z as well, useful during backpropagation
+    """
+    A = np.exp(z)/(np.sum(np.exp(z), axis = 0))
+    return A, cache
+
 def relu(Z):
     """
     Implement the RELU function.
@@ -83,6 +97,25 @@ def sigmoid_backward(dA, cache):
     
     return dZ
 
+def softmax_backward(dA, cache):
+    """
+     Implement the backward propagation for a single SOFTMAX unit.
+
+    Arguments:
+    dA -- post-activation gradient, of any shape
+    cache -- 'Z' where we store for computing backward propagation efficiently
+
+    Returns:
+    dZ -- Gradient of the cost with respect to Z
+    """
+    Z = cache
+    
+    s = np.exp(Z)/(np.sum(np.exp(Z), axis = 0))
+    dZ = dA * s * (1-s)
+    
+    assert (dZ.shape == Z.shape)
+    
+    return dZ
 
 def load_data():
     train_dataset = h5py.File('datasets/train_catvnoncat.h5', "r")
