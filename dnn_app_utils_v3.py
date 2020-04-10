@@ -31,7 +31,7 @@ def softmax(Z):
     A -- output of softmax(z), same shape as Z
     cache -- returns Z as well, useful during backpropagation
     """
-    A = np.exp(z)/(np.sum(np.exp(z), axis = 0))
+    A = np.exp(Z)/(np.sum(np.exp(Z), axis = 0))
     return A, cache
 
 def relu(Z):
