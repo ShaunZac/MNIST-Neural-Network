@@ -235,6 +235,11 @@ def linear_activation_forward(A_prev, W, b, activation):
         # Inputs: "A_prev, W, b". Outputs: "A, activation_cache".
         Z, linear_cache = linear_forward(A_prev, W, b)
         A, activation_cache = sigmoid(Z)
+        
+    if activation == "softmax":
+        # Inputs: "A_prev, W, b". Outputs: "A, activation_cache".
+        Z, linear_cache = linear_forward(A_prev, W, b)
+        A, activation_cache = softmax(Z)
     
     elif activation == "relu":
         # Inputs: "A_prev, W, b". Outputs: "A, activation_cache".
@@ -271,8 +276,8 @@ def L_model_forward(X, parameters):
         A, cache = linear_activation_forward(A_prev, parameters['W' + str(l)], parameters['b' + str(l)], activation = "relu")
         caches.append(cache)
     
-    # Implement LINEAR -> SIGMOID. Add "cache" to the "caches" list.
-    AL, cache = linear_activation_forward(A, parameters['W' + str(L)], parameters['b' + str(L)], activation = "sigmoid")
+    # Implement LINEAR -> SOFTMAX. Add "cache" to the "caches" list.
+    AL, cache = linear_activation_forward(A, parameters['W' + str(L)], parameters['b' + str(L)], activation = "softmax")
     caches.append(cache)
     
     assert(AL.shape == (1,X.shape[1]))
@@ -350,6 +355,10 @@ def linear_activation_backward(dA, cache, activation):
     elif activation == "sigmoid":
         dZ = sigmoid_backward(dA, activation_cache)
         dA_prev, dW, db = linear_backward(dZ, linear_cache)
+        
+    elif activation == "softmax":
+        dZ = softmax_backward(dA, activation_cache)
+        dA_prev, dW, db = linear_backward(dZ, linear_cache)
     
     return dA_prev, dW, db
 
@@ -380,7 +389,7 @@ def L_model_backward(AL, Y, caches):
     
     # Lth layer (SIGMOID -> LINEAR) gradients. Inputs: "AL, Y, caches". Outputs: "grads["dAL"], grads["dWL"], grads["dbL"]
     current_cache = caches[L-1]
-    grads["dA" + str(L-1)], grads["dW" + str(L)], grads["db" + str(L)] = linear_activation_backward(dAL, current_cache, activation = "sigmoid")
+    grads["dA" + str(L-1)], grads["dW" + str(L)], grads["db" + str(L)] = linear_activation_backward(dAL, current_cache, activation = "softmax")
     
     for l in reversed(range(L-1)):
         # lth layer: (RELU -> LINEAR) gradients.
@@ -445,7 +454,7 @@ def predict(X, y, parameters):
     #print results
     #print ("predictions: " + str(p))
     #print ("true labels: " + str(y))
-    print("Accuracy: "  + str(np.sum((p == y)/m)))
+    print("Accuracy: "  + str(np.sum(np.sum(p-y, axis=0)==0)/m))
         
     return p
 
