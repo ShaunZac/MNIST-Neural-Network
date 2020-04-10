@@ -32,6 +32,8 @@ def softmax(Z):
     cache -- returns Z as well, useful during backpropagation
     """
     A = np.exp(Z)/(np.sum(np.exp(Z), axis = 0))
+    cache = Z
+    
     return A, cache
 
 def relu(Z):
@@ -438,25 +440,20 @@ def predict(X, y, parameters):
     
     m = X.shape[1]
     n = len(parameters) // 2 # number of layers in the neural network
-    p = np.zeros((1,m))
     
     # Forward propagation
     probas, caches = L_model_forward(X, parameters)
 
     
     # convert probas to 0/1 predictions
-    for i in range(0, probas.shape[1]):
-        if probas[0,i] > 0.5:
-            p[0,i] = 1
-        else:
-            p[0,i] = 0
+    p = np.where(probas >= 0.5, 1, 0)
     
     #print results
     #print ("predictions: " + str(p))
     #print ("true labels: " + str(y))
-    print("Accuracy: "  + str(np.sum(np.sum(p-y, axis=0)==0)/m))
+    #print("Accuracy: "  + str(np.sum(np.sum(p-y, axis=0)==0)/m))
         
-    return p
+    return np.sum(np.sum(p-y, axis=0)==0)/m
 
 def print_mislabeled_images(classes, X, y, p):
     """
